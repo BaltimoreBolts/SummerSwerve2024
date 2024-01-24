@@ -3,6 +3,7 @@ package frc.robot;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -42,11 +43,13 @@ public class Constants {
     public static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
     public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
 
+    public static final double k_turnGearRatio = 7.0/150.0;
+
     public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
-      new Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
-      new Translation2d(WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0),
-      new Translation2d(-WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0),
-      new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0)
+      new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0), // 0 - back right
+      new Translation2d(-WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0), // 1 - back left
+      new Translation2d(WHEEL_BASE / 2.0, TRACK_WIDTH / 2.0), // 2 - front left
+      new Translation2d(WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0) // 3 - front right
     );
 
     public static final double DRIVE_GEAR_RATIO = 6.75 / 1.0; // 6.75:1
@@ -64,16 +67,16 @@ public class Constants {
     public static final int DRIVE_CURRENT_LIMIT = 35;
     public static final int ANGLE_CURRENT_LIMIT = 25;
 
+    /** Drive motor characterization. */
+    public static final double DRIVE_KS = 0.0;
+    public static final double DRIVE_KV = 1.68E-4;
+    public static final double DRIVE_KA = 0.0;
+
     /** Drive motor PID values. */
-    public static final double DRIVE_KP = 0.1;
+    public static final double DRIVE_KP = 0.00025;
     public static final double DRIVE_KI = 0.0;
     public static final double DRIVE_KD = 0.0;
-    public static final double DRIVE_KF = 0.0;
-
-    /** Drive motor characterization. */
-    public static final double DRIVE_KS = 0.11937;
-    public static final double DRIVE_KV = 2.6335;
-    public static final double DRIVE_KA = 0.46034;
+    public static final double DRIVE_KF = DRIVE_KV;
 
     /** Angle motor PID values. */
     public static final double ANGLE_KP = 0.25;
@@ -83,12 +86,11 @@ public class Constants {
     
     /** Swerve constraints. */
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 3.0;
-    public static final double MAX_ANGULAR_RADIANS_PER_SECOND = 4.0;
+    public static final double MAX_ANGULAR_RADIANS_PER_SECOND = 5.0;
 
     /** Inversions. */
-    public static final boolean DRIVE_MOTOR_INVERSION = true;
+    public static final boolean DRIVE_MOTOR_INVERSION = false;
     public static final boolean ANGLE_MOTOR_INVERSION = true;
-    public static final boolean CANCODER_INVERSION = false;
 
     /** Idle modes. */
     public static final IdleMode DRIVE_IDLE_MODE = IdleMode.kBrake;
@@ -99,32 +101,36 @@ public class Constants {
      * CanCoder offset is in DEGREES, not radians like the rest of the repo.
      * This is to make offset slightly more accurate and easier to measure.
      */
+
+    //mod 0 = back right
     public static final SwerveModuleConstants MOD_0_Constants = new SwerveModuleConstants(
-      7,
-      6,
+      3,
+      2,
       0,
-      225.4
+      Rotation2d.fromDegrees(260.9)
     );
-
+    //mod 1 = back left
     public static final SwerveModuleConstants MOD_1_Constants = new SwerveModuleConstants(
-      4,
       5,
-      6,
-      191.074219  
+      4,
+      1,
+      Rotation2d.fromDegrees(295.6)
     );
 
+    //mod 2 = front left
     public static final SwerveModuleConstants MOD_2_Constants = new SwerveModuleConstants(
       7,
-      8,
-      9,
-      203.906250
+      6,
+      2,
+      Rotation2d.fromDegrees(293.4)
     );
 
+    //mod 3 = front right
     public static final SwerveModuleConstants MOD_3_Constants = new SwerveModuleConstants(
-      10,
-      11,
-      12,
-      155.214844
+      9,
+      8,
+      3,
+      Rotation2d.fromDegrees(314.2)
     );
   }
 

@@ -1,12 +1,21 @@
 package frc.robot;
 
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.Swerve;
+import frc.robot.utils.HeadingControl;
 import frc.robot.utils.SwerveModule;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -15,24 +24,25 @@ import frc.robot.utils.SwerveModule;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // public final Joystick driver;
+  public final CommandXboxController driver;
 
-  // public final Swerve swerve;
+  public final Swerve swerve;
 
   // public final AutoCommands auto;
 
-  public final SwerveModule m_module = new SwerveModule(0, Constants.kSwerve.MOD_0_Constants);
-
   public RobotContainer() {
-    // driver = new Joystick(Constants.kControls.DRIVE_JOYSTICK_ID);
+    driver = new CommandXboxController(Constants.kControls.DRIVE_JOYSTICK_ID);
 
-    // swerve = new Swerve();
+    swerve = new Swerve();
 
+    SmartDashboard.putNumber("drive/speed", 0.0);
+    SmartDashboard.putNumber("drive/velocity(RPM)", 0.0);
     // auto = new AutoCommands(swerve);
 
     // Configure button bindings
     configureButtonBindings();
   }
+
 
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
@@ -41,16 +51,33 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // swerve.setDefaultCommand(swerve.drive(
-    //   () -> -Constants.kControls.X_DRIVE_LIMITER.calculate(driver.getRawAxis(Constants.kControls.TRANSLATION_Y_AXIS)),
-    //   () -> -Constants.kControls.Y_DRIVE_LIMITER.calculate(driver.getRawAxis(Constants.kControls.TRANSLATION_X_AXIS)), 
-    //   () -> -Constants.kControls.THETA_DRIVE_LIMITER.calculate(driver.getRawAxis(Constants.kControls.ROTATION_AXIS)),
-    //   true,
-    //   false
-    // ));
+    swerve.setDefaultCommand(swerve.drive(
+      () -> -Constants.kControls.X_DRIVE_LIMITER.calculate(driver.getRawAxis(Constants.kControls.TRANSLATION_Y_AXIS)),
+      () -> -Constants.kControls.Y_DRIVE_LIMITER.calculate(driver.getRawAxis(Constants.kControls.TRANSLATION_X_AXIS)), 
+      () -> -Constants.kControls.THETA_DRIVE_LIMITER.calculate(driver.getRawAxis(Constants.kControls.ROTATION_AXIS)),
+      true,
+      true
+    ));
 
-    // new JoystickButton(driver, Constants.kControls.GYRO_RESET_BUTTON)
-    //   .onTrue(swerve.zeroGyroCommand());
+
+    driver.a().whileTrue(swerve.drive(
+      () -> -Constants.kControls.X_DRIVE_LIMITER.calculate(driver.getRawAxis(Constants.kControls.TRANSLATION_Y_AXIS)),
+      () -> -Constants.kControls.Y_DRIVE_LIMITER.calculate(driver.getRawAxis(Constants.kControls.TRANSLATION_X_AXIS)), 
+      () -> Rotation2d.fromDegrees(0.0),
+      true,
+      true
+    ));
+
+
+    driver.b().whileTrue(swerve.drive(
+      () -> SmartDashboard.getNumber("drive/speed", 0.0),
+      () -> 0.0, 
+      () -> 0.0,
+      true,
+      true
+    ));
+
+    driver.y().onTrue(new InstantCommand(() -> swerve.resetOdometry(new Pose2d())));
   }
 
     /**
@@ -59,7 +86,9 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // return auto.getSelectedCommand();
-    return new InstantCommand();
+    String autoName = "Auto1";
+    Command resetOdometry = new InstantCommand(() -> 
+        swerve.resetOdometry(PathPlannerAuto.getStaringPoseFromAutoFile(autoName)));
+    return resetOdometry.andThen(new PathPlannerAuto(autoName));
   }
 }

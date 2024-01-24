@@ -5,6 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -30,6 +32,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     robotContainer = new RobotContainer();
+
+    DataLogManager.start();
   }
 
   /**
@@ -46,15 +50,6 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
-    double slider = Units.degreesToRadians(SmartDashboard.getNumber("Angle", 0.0));
-    if (m_joystick.getRawButton(2)) {
-      robotContainer.m_module.setAngle(slider);
-    } else {
-      robotContainer.m_module.stop();
-    }
-
-    robotContainer.m_module.update();
   }
 
   /**
