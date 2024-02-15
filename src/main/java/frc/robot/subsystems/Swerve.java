@@ -160,6 +160,7 @@ public class Swerve extends SubsystemBase {
 
   private void setDrive(double x_mps, double y_mps, Rotation2d heading, boolean isFieldRelative, boolean isOpenLoop) {
       PIDController headingController = new PIDController(3.0, 0.0, 0.0); // if 'ki' or 'kd' is needed, make a member variable
+      headingController.enableContinuousInput(-Math.PI, Math.PI);
       double rotation = headingController.calculate(m_odometry.getPoseMeters().getRotation().getRadians(), heading.getRadians());
       //System.out.println(rotation);
       headingController.close();
@@ -210,6 +211,7 @@ public class Swerve extends SubsystemBase {
 
   public void resetOdometry(Pose2d resetPose) {
     m_odometry.resetPosition(getYaw(), getModulePositionStates(), resetPose);
+    m_headingController.reset(getYaw());
   }
 
   public Command zeroGyroCommand() {

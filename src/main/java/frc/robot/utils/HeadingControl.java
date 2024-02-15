@@ -23,7 +23,7 @@ public class HeadingControl {
         m_snapEnabled = !(Math.abs(headingVelocity) < 0.03 && !previousSnapState) && Math.abs(commandedPower) < 0.05;
 
         if (m_snapEnabled && !previousSnapState) {
-            m_goalHeading = heading;
+            reset(heading);
         }
     }
 
@@ -35,4 +35,7 @@ public class HeadingControl {
         return m_snapEnabled;
     }
 
+    public void reset(Rotation2d newSnapHeading) {
+        m_goalHeading = newSnapHeading;
+    }
 }
