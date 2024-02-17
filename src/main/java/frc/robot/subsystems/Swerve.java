@@ -8,6 +8,9 @@ import java.util.function.Supplier;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathHolonomic;
+import com.pathplanner.lib.commands.FollowPathWithEvents;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -89,7 +92,7 @@ public class Swerve extends SubsystemBase {
             0.4, // Drive base radius in meters. Distance from robot center to furthest module.
             new ReplanningConfig() // Default path replanning config. See the API for the options here
         ),
-        false,
+        this::setFlipPath,
         this // Reference to this subsystem to set requirements
     );
   }
@@ -178,6 +181,12 @@ public class Swerve extends SubsystemBase {
     SwerveModuleState[] states = Constants.kSwerve.KINEMATICS.toSwerveModuleStates(chassisSpeeds);
 
     setModuleStates(states, false);
+  }
+
+  public boolean setFlipPath(){
+    //this function needs to be updated to allow flipping between RED & BLUE sides
+    BooleanSupplier sup = () -> true;
+    return sup.getAsBoolean();
   }
 
   private void setModuleStates(SwerveModuleState[] states, boolean isOpenLoop) {
