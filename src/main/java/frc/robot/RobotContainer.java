@@ -10,11 +10,13 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.Swerve;
 import frc.robot.utils.HeadingControl;
 import frc.robot.utils.SwerveModule;
+import frc.robot.subsystems.Intake;
 
 
 /**
@@ -26,6 +28,8 @@ import frc.robot.utils.SwerveModule;
 public class RobotContainer {
   public final CommandXboxController driver;
 
+  private Intake intake = new Intake();
+
   public final Swerve swerve;
 
   // public final AutoCommands auto;
@@ -34,6 +38,8 @@ public class RobotContainer {
     driver = new CommandXboxController(Constants.kControls.DRIVE_JOYSTICK_ID);
 
     swerve = new Swerve();
+
+    this.intake.setDefaultCommand(new RunCommand(intake::off, intake));
 
     SmartDashboard.putNumber("drive/speed", 0.0);
     SmartDashboard.putNumber("drive/velocity(RPM)", 0.0);
