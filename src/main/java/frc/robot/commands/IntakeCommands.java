@@ -11,7 +11,8 @@ public class IntakeCommands extends SequentialCommandGroup{
     public IntakeCommands(Intake intake) {
             addCommands(new ParallelRaceGroup(new RunCommand(() -> {
                     intake.intakeFast();
-            }), new WaitCommand(5.0)), new InstantCommand(intake::off, intake));
+            }), new WaitCommand(5.0), new RunCommand(() -> 
+            {intake.seeShooter();})), new InstantCommand(intake::off, intake));
 
             addRequirements(intake);
         }
