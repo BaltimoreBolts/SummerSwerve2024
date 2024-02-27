@@ -1,12 +1,16 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -41,24 +45,27 @@ public class Intake extends SubsystemBase {
     this.intakeMotor.set(power);
   }
   
-  public void off() {
+  public Command intakeOffCommand() {
+    return new InstantCommand(() -> intakeOff());
+  }
+
+  public Command outtakeCommand() {
+    return new InstantCommand(() -> outtake());
+  }
+  public Command intakeFastCommand() {
+    return new InstantCommand(() -> intakeFast());
+  }
+  public BooleanSupplier seeShooterSupplier() {
+    return noteAtShooter::get;
+  }
+  private void intakeOff() {
     this.power = 0;
   }
-
-  public void outtake() {
+  private void outtake() {
     this.power = -outakeSpeed;
   }
-  
-  public void intakeFast() {
+  private void intakeFast() {
     this.power = intakeSpeed;
-  }
-
-  public boolean seeIntake() {
-    return noteAtIntake.get();
-  }
-
-  public boolean seeShooter() {
-    return noteAtShooter.get();
   }
 
 }
